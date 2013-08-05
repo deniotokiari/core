@@ -5,6 +5,8 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import by.deniotokiari.core.annotations.db.DBAutoincrement;
 import by.deniotokiari.core.annotations.db.DBPrimaryKey;
 import by.deniotokiari.core.annotations.db.DBUnique;
@@ -24,6 +26,7 @@ public class DBUtils {
 
 	}
 
+	private static final String TEMPLATE_SELECT_DISTINCT_TABLE = "SELECT DISTINCT tbl_name from sqlite_master whrer tbl_name = %s";
 	private static final String TEMPLATE_CREATE_TABLE = "CREATE TABLE %s (%s)";
 	private static final String TEMPLATE_PRIMARY_KEY = "%s %s PRIMARY KEY";
 	private static final String TEMPLATE_FIELD = "%s %s";
@@ -131,6 +134,18 @@ public class DBUtils {
 			throw new IllegalArgumentException(BAD_CONTRACT_FIELD_VALUE);
 		}
 		return value;
+	}
+
+	public static boolean isTableExists(SQLiteDatabase db, String tableName) {
+		Cursor cursor = db.rawQuery(
+				String.format(TEMPLATE_SELECT_DISTINCT_TABLE, tableName), null);
+		if (cursor.getCount() > 0) {
+			cursor.close();
+			return true;
+		} else {
+			cursor.close();
+			return false;
+		}
 	}
 
 }

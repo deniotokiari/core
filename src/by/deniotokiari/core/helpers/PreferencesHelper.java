@@ -57,7 +57,7 @@ public class PreferencesHelper {
 				.getSharedPreferences(name, mode);
 		return preferences.getString(key, defValue);
 	}
-
+	
 	public static void remove(Context context, String name, int mode, String key) {
 		Editor editor = context.getSharedPreferences(name, mode).edit();
 		editor.remove(key);
