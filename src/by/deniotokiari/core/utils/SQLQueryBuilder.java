@@ -1,12 +1,13 @@
 package by.deniotokiari.core.utils;
 
 public class SQLQueryBuilder {
-	
 	private String sql;
 
 	private static final String templateSelect = "SELECT %s";
 	private static final String templateFrom = "FROM %s";
-	private static final String templateJoin = "%s JOIN %s ON %s";
+	private static final String templateJoin = "%s JOIN %s ON %s"; // type JOIN
+																	// table ON
+																	// condition
 	private static final String templateWhere = "WHERE %s";
 	private static final String templateGroupBy = "GROUP BY %s";
 	private static final String templateHaving = "HAVING %s";
@@ -26,6 +27,31 @@ public class SQLQueryBuilder {
 
 	public SQLQueryBuilder() {
 		sql = "";
+	}
+	
+	public static String and(Object... objects) {
+		if (objects == null) {
+			return null;
+		}
+		return getAsString(" AND ", objects);
+	}
+	
+	public static String or(Object... objects) {
+		if (objects == null) {
+			return null;
+		}
+		return getAsString(" OR ", objects);
+	}
+	
+	public static String as(String[] columns, String[] names) {
+		if (columns.length != names.length) {
+			throw new IllegalArgumentException("Columns and names length must be equal!");
+		}
+		Object[] result = new String[columns.length];
+		for (int i = 0; i < columns.length; i++) {
+			result[i] = String.format("%s AS %s", columns[i], names[i]);
+		}
+		return getAsString(", ", result);
 	}
 
 	private void build() {
@@ -56,32 +82,32 @@ public class SQLQueryBuilder {
 		}
 	}
 
-	private String getAsString(Object... objects) {
+	private static String getAsString(String joiner, Object... objects) {
 		String result = "";
 		for (int i = 0; i < objects.length; i++) {
 			if (objects[i] instanceof String) {
-				result += (String) objects[i] + ", ";
+				result += (String) objects[i] + joiner;
 			} else if (objects[i] instanceof SQLQueryBuilder) {
 				result += "(" + ((SQLQueryBuilder) objects[i]);
 				if (((SQLQueryBuilder) objects[i]).selectTitle != null) {
-					result += ") " + ((SQLQueryBuilder) objects[i]).selectTitle + ", ";
+					result += ") " + ((SQLQueryBuilder) objects[i]).selectTitle + joiner;
 				} else {
-					result += ", ";
+					result += joiner;
 				}
 			}
 		}
-		result = result.substring(0, result.length() - 2);
+		result = result.substring(0, result.length() - joiner.length());
 		return result;
 	}
 
 	public SQLQueryBuilder select(String selectTitle, Object... columns) {
-		select = String.format(templateSelect, getAsString(columns));
+		select = String.format(templateSelect, getAsString(", ", columns));
 		this.selectTitle = selectTitle;
 		return this;
 	}
 
 	public SQLQueryBuilder from(Object... from) {
-		this.from = String.format(templateFrom, getAsString(from));
+		this.from = String.format(templateFrom, getAsString(", ", from));
 		return this;
 	}
 
@@ -95,8 +121,11 @@ public class SQLQueryBuilder {
 		return this;
 	}
 
-	public SQLQueryBuilder groupBy(Object groupBy) {
-		this.groupBy = String.format(templateGroupBy, groupBy);
+	public SQLQueryBuilder groupBy(Object... groupBy) {
+		if (groupBy == null) {
+			return this;
+		}
+		this.groupBy = String.format(templateGroupBy, getAsString(", ", groupBy));
 		return this;
 	}
 
@@ -109,7 +138,7 @@ public class SQLQueryBuilder {
 		if (ordersBy == null) {
 			return this;
 		}
-		orderBy = String.format(templateOrderBy, getAsString(ordersBy));
+		orderBy = String.format(templateOrderBy, getAsString(", ", ordersBy));
 		return this;
 	}
 	
