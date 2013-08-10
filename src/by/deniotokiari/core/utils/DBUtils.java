@@ -42,7 +42,7 @@ public class DBUtils {
 		}
 		tableFieldsString.add(getUniqueFileds(fields));
 		return String.format(TEMPLATE_CREATE_TABLE, tableName,
-				JoinToStringUtils.join(tableFieldsString, ", "));
+				StringUtils.join(tableFieldsString, ", "));
 	}
 
 	private static String getPrimaryKey(List<Field> fields) {
@@ -103,7 +103,7 @@ public class DBUtils {
 			}
 		}
 		return String.format(TEMPALTE_UNIQUE,
-				JoinToStringUtils.join(items, ", "));
+				StringUtils.join(items, ", "));
 	}
 
 	private static boolean isPrimaryKeyField(Field field) {

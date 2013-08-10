@@ -3,7 +3,7 @@ package by.deniotokiari.core.utils;
 import java.util.HashMap;
 import java.util.List;
 
-public class JoinToStringUtils {
+public class StringUtils {
 
 	public static <T> String join(List<T> items, String joiner) {
 		String result = "";
