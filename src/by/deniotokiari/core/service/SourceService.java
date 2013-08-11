@@ -26,13 +26,17 @@ public class SourceService extends IntentService {
 			request.executeRequest(getApplicationContext(), receiver);
 		}
 	}
+	
+	public static void execute(Context context, Request<?, ?> request) {
+		execute(context, request, null);
+	}
 
-	public static void execute(Context context, Request<?, ?> reuest,
+	public static void execute(Context context, Request<?, ?> request,
 			ResultReceiver receiver) {
 		Intent intent = new Intent(context, SourceService.class);
-		reuest.setBundleToInten(intent);
+		request.setBundleToInten(intent);
 		intent.putExtra(KEY_RESULT_RECEIVER, receiver);
 		context.startService(intent);
 	}
-
+	
 }
