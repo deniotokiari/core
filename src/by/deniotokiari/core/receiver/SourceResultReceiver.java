@@ -17,7 +17,7 @@ public abstract class SourceResultReceiver extends ResultReceiver {
 	
 	public abstract void onError(Exception e);
 	
-	public abstract void onDone(Bundle resul);
+	public abstract void onDone(Bundle result);
 	
 	public SourceResultReceiver(Handler handler) {
 		super(handler);
