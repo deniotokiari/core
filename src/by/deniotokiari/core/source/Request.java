@@ -143,7 +143,7 @@ public class Request<Source, Result> {
 				source = getEntyti();
 			}
 			IProcessor<Source, Result> processor = (IProcessor<Source, Result>) AppUtils
-					.get(context, KEY_PROCESSOR_KEY);
+					.get(context, getProcessorKey());
 			if (processor != null) {
 				Result result = processor.process(source);
 				if (result == null) {
