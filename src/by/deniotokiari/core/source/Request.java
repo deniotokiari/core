@@ -12,73 +12,62 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.os.ResultReceiver;
 
-public class Request<Source, Result> {
+public class Request<Query, Source, Result> {
 
 	public static final String KEY_REQUEST = "request:request";
-	
-	public static final String FROM_URI = "request:fromUri";
+
 	/** -------- **/
-	public static final String KEY_URI = "request:uri";
+	public static final String KEY_QUERY = "request:query";
 	public static final String KEY_SOURCE_KEY = "request:sourceKey";
 	public static final String KEY_PROCESSOR_KEY = "request:processorKey";
 
-	public static final String FROM_ENTITY = "request:fromEntity";
 	/** -------- **/
 	public static final String KEY_ENTITY = "rquest:entity";
-	public static final String KEY_ENTITY_TYPE = "request:entityType";
+	public static final String KEY_REQUEST_TYPE = "request:requestType";
 
 	public static final String KEY_IS_NEED_CACHE = "request:isNeedCache";
 
-	public static enum ENTITY_TYPE {
-
-		URI, PARCELABLE, PARCELABLE_ARRAY, PARCELABLE_ARRAY_LIST;
-
-	}
-
 	private Bundle mBundle;
-	
+
 	public Request(Intent intent) {
 		mBundle = intent.getParcelableExtra(KEY_REQUEST);
 	}
 
-	public Request(Source source, String sourceKey, String processorKey,
+	public Request(Source source, String processorKey, boolean isNeedCache) {
+		setArgsToBundle(source, null, processorKey, isNeedCache, true);
+	}
+
+	public Request(Query query, String sourceKey, String processorKey,
 			boolean isNeedCache) {
-		setArgsToBundle(source, sourceKey, processorKey, isNeedCache);
+		setArgsToBundle(query, sourceKey, processorKey, isNeedCache, false);
 	}
 
 	public void setBundleToInten(Intent intent) {
 		intent.putExtra(KEY_REQUEST, mBundle);
 	}
-	
-	@SuppressWarnings("unchecked")
-	protected void setArgsToBundle(Source source, String sourceKey,
-			String processorKey, boolean isNeedCache) {
+
+	protected <T> void setArgsToBundle(T object, String sourceKey,
+			String processorKey, boolean isNeedCache, boolean isFromEntity) {
 		mBundle = new Bundle();
 
-		if (source instanceof Parcelable) {
-			mBundle.putParcelable(KEY_ENTITY, (Parcelable) source);
-			mBundle.putInt(KEY_ENTITY_TYPE, ENTITY_TYPE.PARCELABLE.ordinal());
-		} else if (source instanceof Parcelable[]) {
-			mBundle.putParcelableArray(KEY_ENTITY, (Parcelable[]) source);
-			mBundle.putInt(KEY_ENTITY_TYPE,
-					ENTITY_TYPE.PARCELABLE_ARRAY.ordinal());
-		} else if (source instanceof ArrayList<?>) {
-			mBundle.putParcelableArrayList(KEY_ENTITY,
-					(ArrayList<? extends Parcelable>) source);
-			mBundle.putInt(KEY_ENTITY_TYPE,
-					ENTITY_TYPE.PARCELABLE_ARRAY_LIST.ordinal());
-		} else if (source instanceof String) {
-			mBundle.putString(KEY_URI, (String) source);
-			mBundle.putInt(KEY_ENTITY_TYPE, ENTITY_TYPE.URI.ordinal());
+		String key = null;
+		if (isFromEntity) {
+			key = KEY_ENTITY;
+		} else {
+			key = KEY_QUERY;
 		}
+		mBundle.putString(KEY_REQUEST_TYPE, key);
+
+		setToBundle(object, key, mBundle);
 
 		mBundle.putString(KEY_PROCESSOR_KEY, processorKey);
 		mBundle.putBoolean(KEY_IS_NEED_CACHE, isNeedCache);
 		mBundle.putString(KEY_SOURCE_KEY, sourceKey);
 	}
 
-	protected String getUri() {
-		return mBundle.getString(KEY_URI);
+	@SuppressWarnings("unchecked")
+	protected Query getQuery() {
+		return (Query) mBundle.getString(KEY_QUERY);
 	}
 
 	protected String getSourceKey() {
@@ -89,26 +78,12 @@ public class Request<Source, Result> {
 		return mBundle.getString(KEY_PROCESSOR_KEY);
 	}
 
-	@SuppressWarnings("unchecked")
-	protected Source getEntyti() {
-		switch (getEntityType()) {
-		case PARCELABLE:
-			return mBundle.getParcelable(KEY_ENTITY);
-		case PARCELABLE_ARRAY:
-			return (Source) mBundle.getParcelableArray(KEY_ENTITY);
-		case PARCELABLE_ARRAY_LIST:
-			return (Source) mBundle.getParcelableArrayList(KEY_ENTITY);
-		default:
-			return null;
-		}
-	}
-
 	protected boolean isNeedCache() {
 		return mBundle.getBoolean(KEY_IS_NEED_CACHE);
 	}
 
-	protected ENTITY_TYPE getEntityType() {
-		return ENTITY_TYPE.values()[mBundle.getInt(KEY_ENTITY_TYPE)];
+	protected String getRequestType() {
+		return mBundle.getString(KEY_REQUEST_TYPE);
 	}
 
 	protected void sendStatus(SourceResultReceiver.STATUS status,
@@ -119,15 +94,53 @@ public class Request<Source, Result> {
 	}
 
 	@SuppressWarnings("unchecked")
+	protected <T> void setToBundle(T object, String key, Bundle bundle) {
+		if (object instanceof Parcelable) {
+			bundle.putParcelable(key, (Parcelable) object);
+		} else if (object instanceof Parcelable[]) {
+			bundle.putParcelableArray(key, (Parcelable[]) object);
+		} else if (object instanceof ArrayList<?>) {
+			bundle.putParcelableArrayList(key,
+					(ArrayList<? extends Parcelable>) object);
+		} else if (object instanceof String) {
+			bundle.putString(key, (String) object);
+		} else if (object instanceof String[]) {
+			bundle.putStringArray(key, (String[]) object);
+		} else if (object instanceof Serializable) {
+			bundle.putSerializable(key, (Serializable) object);
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	protected Source getEntyti() {
+		Source object = null;
+		if (object instanceof Parcelable) {
+			return mBundle.getParcelable(KEY_ENTITY);
+		} else if (object instanceof Parcelable[]) {
+			return (Source) mBundle.getParcelableArray(KEY_ENTITY);
+		} else if (object instanceof ArrayList<?>) {
+			return (Source) mBundle.getParcelableArrayList(KEY_ENTITY);
+		} else if (object instanceof String) {
+			return (Source) mBundle.getString(KEY_ENTITY);
+		} else if (object instanceof String[]) {
+			return (Source) mBundle.getStringArray(KEY_ENTITY);
+		} else if (object instanceof Serializable) {
+			return (Source) mBundle.getSerializable(KEY_ENTITY);
+		} else {
+			return null;
+		}
+	}
+
+	@SuppressWarnings("unchecked")
 	public void executeRequest(Context context, ResultReceiver resultReceiver) {
 		sendStatus(STATUS.START, resultReceiver, mBundle);
 		try {
 			Source source = null;
-			if (getEntityType() == ENTITY_TYPE.URI) {
-				ISource<Source> dataSource = (ISource<Source>) AppUtils
+			if (getRequestType().equals(KEY_QUERY)) {
+				ISource<Query, Source> dataSource = (ISource<Query, Source>) AppUtils
 						.get(context, getSourceKey());
 				try {
-					source = dataSource.getSource(getUri());
+					source = dataSource.getSource(getQuery());
 				} catch (Exception e) {
 					mBundle.putSerializable(SourceResultReceiver.ERROR_KEY, e);
 					sendStatus(STATUS.ERROR, resultReceiver, mBundle);
@@ -165,25 +178,8 @@ public class Request<Source, Result> {
 						return;
 					}
 				} else {
-					if (result instanceof Parcelable) {
-						mBundle.putParcelable(SourceResultReceiver.RESULT_KEY,
-								(Parcelable) result);
-					} else if (result instanceof Parcelable[]) {
-						mBundle.putParcelableArray(
-								SourceResultReceiver.RESULT_KEY,
-								(Parcelable[]) result);
-					} else if (result instanceof ArrayList<?>) {
-						mBundle.putParcelableArrayList(
-								SourceResultReceiver.RESULT_KEY,
-								(ArrayList<? extends Parcelable>) result);
-					} else if (result instanceof Serializable) {
-						mBundle.putSerializable(
-								SourceResultReceiver.RESULT_KEY,
-								(Serializable) result);
-					} else if (result instanceof String) {
-						mBundle.putString(SourceResultReceiver.RESULT_KEY,
-								(String) result);
-					}
+					setToBundle(result, SourceResultReceiver.RESULT_KEY,
+							mBundle);
 				}
 			}
 			sendStatus(STATUS.DONE, resultReceiver, mBundle);

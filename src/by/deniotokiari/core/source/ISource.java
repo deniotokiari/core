@@ -2,8 +2,8 @@ package by.deniotokiari.core.source;
 
 import by.deniotokiari.core.helpers.CoreHelper.IAppServiceKey;
 
-public interface ISource<Source> extends IAppServiceKey {
+public interface ISource<Query, Source> extends IAppServiceKey {
 
-	Source getSource(String uri) throws Exception;
+	Source getSource(Query query) throws Exception;
 	
 }
