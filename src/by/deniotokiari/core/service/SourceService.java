@@ -1,6 +1,5 @@
 package by.deniotokiari.core.service;
 
-import by.deniotokiari.core.source.Request;
 import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
@@ -27,11 +26,11 @@ public class SourceService extends IntentService {
 		}
 	}
 	
-	public static void execute(Context context, Request<?, ?> request) {
+	public static void execute(Context context, Request<?, ?, ?> request) {
 		execute(context, request, null);
 	}
 
-	public static void execute(Context context, Request<?, ?> request,
+	public static void execute(Context context, Request<?, ?, ?> request,
 			ResultReceiver receiver) {
 		Intent intent = new Intent(context, SourceService.class);
 		request.setBundleToInten(intent);

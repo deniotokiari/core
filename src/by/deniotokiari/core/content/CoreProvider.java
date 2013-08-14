@@ -8,37 +8,53 @@ import android.net.Uri;
 
 abstract public class CoreProvider extends ContentProvider {
 
-	abstract Class<?> getContract();
-	
+	private CoreDataBase mDataBase;
+
+	protected abstract Class<?> getContract();
+
 	@Override
 	public boolean onCreate() {
-		return false;
+		mDataBase = new CoreDataBase(getContext());
+		return true;
 	}
-	
+
 	@Override
 	public String getType(Uri uri) {
 		return ContractUtils.getType(getContract());
 	}
-	
+
 	@Override
 	public int delete(Uri uri, String selection, String[] selectionArgs) {
-		return 0;
+		int result = mDataBase.deleteItems(getContract(), selection,
+				selectionArgs);
+		getContext().getContentResolver().notifyChange(uri, null);
+		return result;
 	}
 
 	@Override
 	public int bulkInsert(Uri uri, ContentValues[] values) {
-		return 0;
+		int inserted = mDataBase.addItems(getContract(), values);
+		getContext().getContentResolver().notifyChange(uri, null);
+		return inserted;
 	}
-	
+
 	@Override
-	public Uri insert(Uri uri, ContentValues values) {
-		return null;
+	public Uri insert(Uri uri, ContentValues value) {
+		long id = mDataBase.addItem(getContract(), value);
+		Uri itemUri = Uri.parse(uri + "/" + id);
+		if (id > 0) {
+			getContext().getContentResolver().notifyChange(itemUri, null);
+		}
+		return itemUri;
 	}
 
 	@Override
 	public Cursor query(Uri uri, String[] projection, String selection,
 			String[] selectionArgs, String sortOrder) {
-		return null;
+		Cursor items = mDataBase.getItems(getContract(), selection,
+				selectionArgs, sortOrder);
+		items.setNotificationUri(getContext().getContentResolver(), uri);
+		return items;
 	}
 
 	@Override
@@ -46,9 +62,11 @@ abstract public class CoreProvider extends ContentProvider {
 			String[] selectionArgs) {
 		return 0;
 	}
-	
-	public Cursor rawQuery() {
-		return null;
+
+	public Cursor rawQuery(Uri uri, String sql, String[] selectionArgs) {
+		Cursor items = mDataBase.rawQuery(getContract(), sql, selectionArgs);
+		items.setNotificationUri(getContext().getContentResolver(), uri);
+		return items;
 	}
 
 }

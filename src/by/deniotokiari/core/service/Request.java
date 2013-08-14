@@ -1,10 +1,12 @@
-package by.deniotokiari.core.source;
+package by.deniotokiari.core.service;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 
 import by.deniotokiari.core.receiver.SourceResultReceiver;
 import by.deniotokiari.core.receiver.SourceResultReceiver.STATUS;
+import by.deniotokiari.core.source.IProcessor;
+import by.deniotokiari.core.source.ISource;
 import by.deniotokiari.core.utils.AppUtils;
 import android.content.Context;
 import android.content.Intent;
@@ -15,17 +17,19 @@ import android.os.ResultReceiver;
 public class Request<Query, Source, Result> {
 
 	public static final String KEY_REQUEST = "request:request";
-
-	/** -------- **/
 	public static final String KEY_QUERY = "request:query";
 	public static final String KEY_SOURCE_KEY = "request:sourceKey";
 	public static final String KEY_PROCESSOR_KEY = "request:processorKey";
-
-	/** -------- **/
 	public static final String KEY_ENTITY = "rquest:entity";
 	public static final String KEY_REQUEST_TYPE = "request:requestType";
-
 	public static final String KEY_IS_NEED_CACHE = "request:isNeedCache";
+	public static final String KEY_ENTITY_TYPE = "request:entityType";
+
+	public static enum ENTITY_TYPE {
+
+		STRING, STRING_ARRAY, PARCELABLE, PARCELABLE_ARRAY, PARCELABLE_ARRAY_LIST, SERIALIZABLE
+
+	}
 
 	private Bundle mBundle;
 
@@ -97,36 +101,46 @@ public class Request<Query, Source, Result> {
 	protected <T> void setToBundle(T object, String key, Bundle bundle) {
 		if (object instanceof Parcelable) {
 			bundle.putParcelable(key, (Parcelable) object);
+			bundle.putString(KEY_ENTITY_TYPE, ENTITY_TYPE.PARCELABLE.name());
 		} else if (object instanceof Parcelable[]) {
 			bundle.putParcelableArray(key, (Parcelable[]) object);
+			bundle.putString(KEY_ENTITY_TYPE,
+					ENTITY_TYPE.PARCELABLE_ARRAY.name());
 		} else if (object instanceof ArrayList<?>) {
 			bundle.putParcelableArrayList(key,
 					(ArrayList<? extends Parcelable>) object);
+			bundle.putString(KEY_ENTITY_TYPE,
+					ENTITY_TYPE.PARCELABLE_ARRAY_LIST.name());
 		} else if (object instanceof String) {
 			bundle.putString(key, (String) object);
+			bundle.putString(KEY_ENTITY_TYPE, ENTITY_TYPE.STRING.name());
 		} else if (object instanceof String[]) {
 			bundle.putStringArray(key, (String[]) object);
+			bundle.putString(KEY_ENTITY_TYPE, ENTITY_TYPE.STRING_ARRAY.name());
 		} else if (object instanceof Serializable) {
 			bundle.putSerializable(key, (Serializable) object);
+			bundle.putString(KEY_ENTITY_TYPE, ENTITY_TYPE.SERIALIZABLE.name());
 		}
 	}
 
 	@SuppressWarnings("unchecked")
-	protected Source getEntyti() {
-		Source object = null;
-		if (object instanceof Parcelable) {
-			return mBundle.getParcelable(KEY_ENTITY);
-		} else if (object instanceof Parcelable[]) {
-			return (Source) mBundle.getParcelableArray(KEY_ENTITY);
-		} else if (object instanceof ArrayList<?>) {
-			return (Source) mBundle.getParcelableArrayList(KEY_ENTITY);
-		} else if (object instanceof String) {
-			return (Source) mBundle.getString(KEY_ENTITY);
-		} else if (object instanceof String[]) {
-			return (Source) mBundle.getStringArray(KEY_ENTITY);
-		} else if (object instanceof Serializable) {
-			return (Source) mBundle.getSerializable(KEY_ENTITY);
-		} else {
+	protected Source getEntyti(Bundle bundle, String key) {
+		ENTITY_TYPE type = ENTITY_TYPE.valueOf(bundle
+				.getString(KEY_ENTITY_TYPE));
+		switch (type) {
+		case PARCELABLE:
+			return bundle.getParcelable(key);
+		case PARCELABLE_ARRAY:
+			return (Source) bundle.getParcelableArray(key);
+		case PARCELABLE_ARRAY_LIST:
+			return (Source) bundle.getParcelableArrayList(key);
+		case SERIALIZABLE:
+			return (Source) bundle.getSerializable(key);
+		case STRING:
+			return (Source) bundle.getString(key);
+		case STRING_ARRAY:
+			return (Source) bundle.getStringArray(key);
+		default:
 			return null;
 		}
 	}
@@ -153,7 +167,7 @@ public class Request<Query, Source, Result> {
 					return;
 				}
 			} else {
-				source = getEntyti();
+				source = getEntyti(mBundle, KEY_ENTITY);
 			}
 			IProcessor<Source, Result> processor = (IProcessor<Source, Result>) AppUtils
 					.get(context, getProcessorKey());

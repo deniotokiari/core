@@ -9,7 +9,7 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-abstract public class CoreDataBase extends SQLiteOpenHelper {
+public class CoreDataBase extends SQLiteOpenHelper {
 
 	private static final String DB_NAME = "core.store.db";
 	private static final int DB_VERSION = 1;
@@ -18,8 +18,7 @@ abstract public class CoreDataBase extends SQLiteOpenHelper {
 	private Context mContext;
 	private SQLiteDatabase mDatabase;
 	private boolean isInTransaction = false;
-
-	abstract public Class<?>[] getDeclaringContracts();
+	private Class<?> mContract;
 
 	public CoreDataBase(Context context) {
 		super(context, DB_NAME, null, DB_VERSION);
@@ -32,13 +31,11 @@ abstract public class CoreDataBase extends SQLiteOpenHelper {
 		try {
 			setInTransaction(true);
 			db.beginTransaction();
-			Class<?>[] contracts = getDeclaringContracts();
+			Class<?> claz = mContract.getDeclaringClass();
+			Class<?>[] contracts = claz.getClasses();
 			for (Class<?> contract : contracts) {
 				ContractUtils.checkContractClass(contract);
-				Class<?>[] tables = contract.getClasses();
-				for (Class<?> table : tables) {
-					db.execSQL(DBUtils.getCreateTableString(table));
-				}
+				db.execSQL(DBUtils.getCreateTableString(contract));
 			}
 			db.setTransactionSuccessful();
 		} finally {
@@ -54,6 +51,12 @@ abstract public class CoreDataBase extends SQLiteOpenHelper {
 			db.setVersion(newVersion);
 		}
 		onCreate(mDatabase);
+	}
+
+	private void createTableIfNotExist(String table) {
+		if (!DBUtils.isTableExists(mDatabase, table)) {
+			onCreate(mDatabase);
+		}
 	}
 
 	protected void deleteDataBase() {
@@ -91,22 +94,21 @@ abstract public class CoreDataBase extends SQLiteOpenHelper {
 		}
 	}
 
-	/** Add and Get item(s) **/
-
 	protected long addItem(Class<?> contract, ContentValues value)
 			throws SQLException {
 		syncTransaction();
+		mContract = contract;
 		mDatabase = getWritableDatabase();
+		String table = ContractUtils.getTableName(contract);
+		createTableIfNotExist(table);
 		long added;
 		try {
 			setInTransaction(true);
 			mDatabase.beginTransaction();
-			added = mDatabase.insertWithOnConflict(
-					ContractUtils.getTableName(contract), null, value,
+			added = mDatabase.insertWithOnConflict(table, null, value,
 					SQLiteDatabase.CONFLICT_REPLACE);
 			if (added <= 0) {
-				throw new SQLException("Failed to insert row into "
-						+ ContractUtils.getTableName(contract));
+				throw new SQLException("Failed to insert row into " + table);
 			}
 			mDatabase.setTransactionSuccessful();
 		} finally {
@@ -119,19 +121,20 @@ abstract public class CoreDataBase extends SQLiteOpenHelper {
 	protected int addItems(Class<?> contract, ContentValues[] values)
 			throws SQLException {
 		syncTransaction();
+		mContract = contract;
 		mDatabase = getWritableDatabase();
+		String table = ContractUtils.getTableName(contract);
+		createTableIfNotExist(table);
 		long added;
 		int inserted = 0;
 		try {
 			setInTransaction(true);
 			mDatabase.beginTransaction();
 			for (ContentValues value : values) {
-				added = mDatabase.insertWithOnConflict(
-						ContractUtils.getTableName(contract), null, value,
+				added = mDatabase.insertWithOnConflict(table, null, value,
 						SQLiteDatabase.CONFLICT_REPLACE);
 				if (added <= 0) {
-					throw new SQLException("Failed to insert row into "
-							+ ContractUtils.getTableName(contract));
+					throw new SQLException("Failed to insert row into " + table);
 				} else {
 					inserted++;
 				}
@@ -144,10 +147,73 @@ abstract public class CoreDataBase extends SQLiteOpenHelper {
 		return inserted;
 	}
 
-	/*protected Cursor getItems(Class<?> contract, String selection, String[] selectionArgs, String orderBy) {
+	protected Cursor getItems(Class<?> contract, String selection,
+			String[] selectionArgs, String orderBy) {
 		syncTransaction();
+		mContract = contract;
 		mDatabase = getWritableDatabase();
-		
-	}*/
-	
+		String table = ContractUtils.getTableName(contract);
+		createTableIfNotExist(table);
+		Cursor cursor = null;
+		try {
+			setInTransaction(true);
+			mDatabase.beginTransaction();
+			cursor = mDatabase.query(table, null, selection, selectionArgs,
+					null, null, null);
+			if (cursor == null) {
+				throw new SQLException("Failed to query row from " + table);
+			}
+		} finally {
+			mDatabase.endTransaction();
+			setInTransaction(false);
+		}
+		return cursor;
+	}
+
+	protected Cursor rawQuery(Class<?> contract, String sql,
+			String[] selectionArgs) {
+		syncTransaction();
+		mContract = contract;
+		mDatabase = getWritableDatabase();
+		String table = ContractUtils.getTableName(contract);
+		createTableIfNotExist(table);
+		Cursor cursor = null;
+		try {
+			setInTransaction(true);
+			mDatabase.beginTransaction();
+			cursor = mDatabase.rawQuery(sql, selectionArgs);
+			if (cursor == null) {
+				throw new SQLException("Failed to query: " + sql);
+			}
+		} finally {
+			mDatabase.endTransaction();
+			setInTransaction(false);
+		}
+		return cursor;
+	}
+
+	protected int deleteItems(Class<?> contract, String where,
+			String[] whereArgs) {
+		if (mDatabase == null) {
+			return 0;
+		}
+		syncTransaction();
+		mContract = contract;
+		mDatabase = getWritableDatabase();
+		String table = ContractUtils.getTableName(contract);
+		int result = 0;
+		try {
+			setInTransaction(true);
+			mDatabase.beginTransaction();
+			if (DBUtils.isTableExists(mDatabase, table)) {
+				result = mDatabase.delete(table, where, whereArgs);
+			}
+			mDatabase.setTransactionSuccessful();
+			return result;
+		} finally {
+			mDatabase.endTransaction();
+			setInTransaction(false);
+		}
+	}
+
 }
