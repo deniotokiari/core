@@ -1,5 +1,6 @@
 package by.deniotokiari.core.content;
 
+import by.deniotokiari.core.helpers.UriHelper;
 import by.deniotokiari.core.utils.ContractUtils;
 import android.content.ContentProvider;
 import android.content.ContentValues;
@@ -7,6 +8,8 @@ import android.database.Cursor;
 import android.net.Uri;
 
 abstract public class CoreProvider extends ContentProvider {
+
+	public static final String IS_NO_NOTIFAED = "is_notifaed";
 
 	private CoreDataBase mDataBase;
 
@@ -27,14 +30,18 @@ abstract public class CoreProvider extends ContentProvider {
 	public int delete(Uri uri, String selection, String[] selectionArgs) {
 		int result = mDataBase.deleteItems(getContract(), selection,
 				selectionArgs);
-		getContext().getContentResolver().notifyChange(uri, null);
+		if (!UriHelper.isHasKey(uri, IS_NO_NOTIFAED)) {
+			getContext().getContentResolver().notifyChange(uri, null);
+		}
 		return result;
 	}
 
 	@Override
 	public int bulkInsert(Uri uri, ContentValues[] values) {
 		int inserted = mDataBase.addItems(getContract(), values);
-		getContext().getContentResolver().notifyChange(uri, null);
+		if (!UriHelper.isHasKey(uri, IS_NO_NOTIFAED)) {
+			getContext().getContentResolver().notifyChange(uri, null);
+		}
 		return inserted;
 	}
 
@@ -43,7 +50,9 @@ abstract public class CoreProvider extends ContentProvider {
 		long id = mDataBase.addItem(getContract(), value);
 		Uri itemUri = Uri.parse(uri + "/" + id);
 		if (id > 0) {
-			getContext().getContentResolver().notifyChange(itemUri, null);
+			if (!UriHelper.isHasKey(uri, IS_NO_NOTIFAED)) {
+				getContext().getContentResolver().notifyChange(itemUri, null);
+			}
 		}
 		return itemUri;
 	}
@@ -53,7 +62,9 @@ abstract public class CoreProvider extends ContentProvider {
 			String[] selectionArgs, String sortOrder) {
 		Cursor items = mDataBase.getItems(getContract(), selection,
 				selectionArgs, sortOrder);
-		items.setNotificationUri(getContext().getContentResolver(), uri);
+		if (!UriHelper.isHasKey(uri, IS_NO_NOTIFAED)) {
+			items.setNotificationUri(getContext().getContentResolver(), uri);
+		}
 		return items;
 	}
 
@@ -65,7 +76,9 @@ abstract public class CoreProvider extends ContentProvider {
 
 	public Cursor rawQuery(Uri uri, String sql, String[] selectionArgs) {
 		Cursor items = mDataBase.rawQuery(getContract(), sql, selectionArgs);
-		items.setNotificationUri(getContext().getContentResolver(), uri);
+		if (!UriHelper.isHasKey(uri, IS_NO_NOTIFAED)) {
+			items.setNotificationUri(getContext().getContentResolver(), uri);
+		}
 		return items;
 	}
 

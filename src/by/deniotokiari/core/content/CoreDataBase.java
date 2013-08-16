@@ -31,12 +31,8 @@ public class CoreDataBase extends SQLiteOpenHelper {
 		try {
 			setInTransaction(true);
 			db.beginTransaction();
-			Class<?> claz = mContract.getDeclaringClass();
-			Class<?>[] contracts = claz.getClasses();
-			for (Class<?> contract : contracts) {
-				ContractUtils.checkContractClass(contract);
-				db.execSQL(DBUtils.getCreateTableString(contract));
-			}
+			ContractUtils.checkContractClass(mContract);
+			db.execSQL(DBUtils.getCreateTableString(mContract));
 			db.setTransactionSuccessful();
 		} finally {
 			db.endTransaction();
