@@ -7,7 +7,7 @@ public class UriHelper {
 	public static final String TEMPLATE_QUERY_EMPTY = "?%s=%s";
 	public static final String TEMPLATE_QUERY_NOT_EMPTY = "&%s=%s";
 
-	public static Uri getUriWithParams(Uri uri, String[] keys, String[] params) {
+	public synchronized static Uri getUriWithParams(Uri uri, String[] keys, String[] params) {
 		String str = "";
 		int j = 0;
 		if (uri.getQuery() == null) {
@@ -22,7 +22,7 @@ public class UriHelper {
 		return Uri.parse(result);
 	}
 
-	public static Uri getUriWithParam(Uri uri, String key, String param) {
+	public synchronized static Uri getUriWithParam(Uri uri, String key, String param) {
 		String template = null;
 		if (uri.getQuery() == null) {
 			template = TEMPLATE_QUERY_EMPTY;
@@ -32,7 +32,7 @@ public class UriHelper {
 		return Uri.parse(uri + String.format(template, key, param));
 	}
 
-	public static Uri getUriWithKey(Uri uri, String key) {
+	public synchronized static Uri getUriWithKey(Uri uri, String key) {
 		if (uri.getQuery() == null) {
 			return Uri.parse(uri + "?" + key);
 		} else {
@@ -40,7 +40,7 @@ public class UriHelper {
 		}
 	}
 
-	public static boolean isHasKey(Uri uri, String key) {
+	public synchronized static boolean isHasKey(Uri uri, String key) {
 		if (uri.getQuery() != null) {
 			return uri.getQuery().contains(key);
 		}
