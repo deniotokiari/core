@@ -1,9 +1,9 @@
 package by.deniotokiari.core.adapter.cursor;
 
+import by.deniotokiari.core.adapter.ViewHolder;
 import android.content.Context;
 import android.database.Cursor;
 import android.support.v4.widget.CursorAdapter;
-import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -27,7 +27,7 @@ public abstract class BaseCursorAdapter extends CursorAdapter {
 		View view = null;
 		if (convertView == null) {
 			view = newView(mContext, mCursor, parent);
-			ViewHolder holder = getViewHolder(view);
+			ViewHolder holder = new ViewHolder(view, getViewsIds());
 			view.setTag(holder);
 		} else {
 			view = convertView;
@@ -42,30 +42,4 @@ public abstract class BaseCursorAdapter extends CursorAdapter {
 		bindData(view, context, cursor, holder);
 	}
 
-	protected ViewHolder getViewHolder(View view) {
-		ViewHolder holder = new ViewHolder();
-		int[] ids = getViewsIds();
-		for (int id : ids) {
-			holder.add(id, view.findViewById(id));
-		}
-		return holder;
-	}
-
-	public class ViewHolder {
-
-		private SparseArray<View> mViews;
-
-		public ViewHolder() {
-			mViews = new SparseArray<View>();
-		}
-
-		public void add(int id, View view) {
-			mViews.put(id, view);
-		}
-
-		public View getViewById(int id) {
-			return mViews.get(id);
-		}
-	}
-	
 }

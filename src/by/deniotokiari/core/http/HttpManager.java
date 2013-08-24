@@ -110,8 +110,9 @@ public class HttpManager implements IAppServiceKey {
 	public static HttpManager get(Context context) {
 		if (instance == null) {
 			CoreHelper.get(context).registerAppService(new HttpManager());
+			instance = (HttpManager) AppUtils.get(context, SYSTEM_SERVICE_KEY);
 		}
-		return (HttpManager) AppUtils.get(context, SYSTEM_SERVICE_KEY);
+		return instance;
 	}
 
 	public String postRequest(String url, ArrayList<BasicNameValuePair> params)

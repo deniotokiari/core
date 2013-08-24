@@ -1,5 +1,7 @@
 package by.deniotokiari.core.app;
 
+import com.nostra13.universalimageloader.core.ImageLoader;
+
 import by.deniotokiari.core.context.ContextHolder;
 import by.deniotokiari.core.helpers.CoreHelper;
 import by.deniotokiari.core.helpers.CoreHelper.IAppServiceKey;
@@ -10,12 +12,19 @@ public abstract class CoreApplication extends Application {
 	private CoreHelper mCoreHelper;
 
 	public abstract void register();
+	
+	public static final class PLUGIN {
+		
+		public static final String UNIVERSAL_IMAGE_LOADER = "plugin:UniversalImageLoader";
+		
+	}
 
 	@Override
 	public void onCreate() {
 		mCoreHelper = new CoreHelper();
 		ContextHolder.getInstance().setContext(this);
 		register();
+		registerPlugins();
 		super.onCreate();
 	}
 
@@ -31,6 +40,11 @@ public abstract class CoreApplication extends Application {
 
 	public void registerService(IAppServiceKey service) {
 		mCoreHelper.registerAppService(service);
+	}
+
+	private void registerPlugins() {
+		registerService(new PluginWrapper(PLUGIN.UNIVERSAL_IMAGE_LOADER,
+				ImageLoader.getInstance()));
 	}
 
 }

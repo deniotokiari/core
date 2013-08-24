@@ -3,6 +3,7 @@ package by.deniotokiari.core.helpers;
 import java.util.HashMap;
 import java.util.Map;
 
+import by.deniotokiari.core.app.PluginWrapper;
 import by.deniotokiari.core.utils.AppUtils;
 import android.content.Context;
 
@@ -26,7 +27,12 @@ public class CoreHelper {
 		if (key.equals(SYSTEM_SERVICE_KEY)) {
 			return this;
 		} else if (mAppServices.containsKey(key)) {
-			return mAppServices.get(key);
+			Object item = mAppServices.get(key);
+			if (item instanceof PluginWrapper) {
+				return ((PluginWrapper) item).getPlugin();
+			} else {
+				return item;
+			}
 		} else {
 			return null;
 		}
