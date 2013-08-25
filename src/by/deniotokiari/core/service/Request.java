@@ -68,12 +68,7 @@ public class Request<Query, Source, Result> {
 		mBundle.putBoolean(KEY_IS_NEED_CACHE, isNeedCache);
 		mBundle.putString(KEY_SOURCE_KEY, sourceKey);
 	}
-
-	@SuppressWarnings("unchecked")
-	protected Query getQuery() {
-		return (Query) mBundle.getString(KEY_QUERY);
-	}
-
+	
 	protected String getSourceKey() {
 		return mBundle.getString(KEY_SOURCE_KEY);
 	}
@@ -124,22 +119,22 @@ public class Request<Query, Source, Result> {
 	}
 
 	@SuppressWarnings("unchecked")
-	protected Source getEntyti(Bundle bundle, String key) {
+	protected <T> T getEntyti(Bundle bundle, String key) {
 		ENTITY_TYPE type = ENTITY_TYPE.valueOf(bundle
 				.getString(KEY_ENTITY_TYPE));
 		switch (type) {
 		case PARCELABLE:
 			return bundle.getParcelable(key);
 		case PARCELABLE_ARRAY:
-			return (Source) bundle.getParcelableArray(key);
+			return (T) bundle.getParcelableArray(key);
 		case PARCELABLE_ARRAY_LIST:
-			return (Source) bundle.getParcelableArrayList(key);
+			return (T) bundle.getParcelableArrayList(key);
 		case SERIALIZABLE:
-			return (Source) bundle.getSerializable(key);
+			return (T) bundle.getSerializable(key);
 		case STRING:
-			return (Source) bundle.getString(key);
+			return (T) bundle.getString(key);
 		case STRING_ARRAY:
-			return (Source) bundle.getStringArray(key);
+			return (T) bundle.getStringArray(key);
 		default:
 			return null;
 		}
@@ -154,7 +149,7 @@ public class Request<Query, Source, Result> {
 				ISource<Query, Source> dataSource = (ISource<Query, Source>) AppUtils
 						.get(context, getSourceKey());
 				try {
-					source = dataSource.getSource(getQuery());
+					source = dataSource.getSource((Query) getEntyti(mBundle, KEY_QUERY));
 				} catch (Exception e) {
 					mBundle.putSerializable(SourceResultReceiver.ERROR_KEY, e);
 					sendStatus(STATUS.ERROR, resultReceiver, mBundle);
