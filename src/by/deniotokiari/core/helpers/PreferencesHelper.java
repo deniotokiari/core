@@ -58,6 +58,12 @@ public class PreferencesHelper {
 		return preferences.getString(key, defValue);
 	}
 	
+	public static boolean isContains(Context context, String name, int mode, String key) {
+		SharedPreferences preferences = context
+				.getSharedPreferences(name, mode);
+		return preferences.contains(key);
+	}
+	
 	public static void remove(Context context, String name, int mode, String key) {
 		Editor editor = context.getSharedPreferences(name, mode).edit();
 		editor.remove(key);
