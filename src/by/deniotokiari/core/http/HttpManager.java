@@ -73,9 +73,9 @@ public class HttpManager implements IAppServiceKey {
 
 		private RequestType(String type) {
 
-		};
+		}
 
-	}
+    }
 
 	private HttpManager() {
 		HttpParams params = new BasicHttpParams();

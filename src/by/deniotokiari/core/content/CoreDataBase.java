@@ -84,7 +84,7 @@ public class CoreDataBase extends SQLiteOpenHelper {
 		synchronized (DB_OBJECT_LOCK) {
 			try {
 				DB_OBJECT_LOCK.wait();
-			} catch (InterruptedException e) {
+			} catch (InterruptedException ignored) {
 
 			}
 		}

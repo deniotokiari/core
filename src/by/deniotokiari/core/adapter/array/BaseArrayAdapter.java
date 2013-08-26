@@ -63,7 +63,7 @@ public abstract class BaseArrayAdapter<T> extends ArrayAdapter<T> {
 		if (mMultiSelection) {
 			return mSelectedItems.contains(Integer.valueOf(position));
 		}  else {
-			return mSelected == position ? true : false;
+			return mSelected == position;
 		}
 	}
 	

@@ -51,6 +51,6 @@ public abstract class SourceResultReceiver extends ResultReceiver {
 	
 	protected void onStart(Bundle result) {
 		
-	};
-	
+	}
+
 }

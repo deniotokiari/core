@@ -25,11 +25,7 @@ public class ContractUtils {
 	}
 
 	public static boolean isContractClass(Class<?> cls) {
-		if (cls.getAnnotation(DBContract.class) != null) {
-			return true;
-		} else {
-			return false;
-		}
+        return cls.getAnnotation(DBContract.class) != null;
 	}
 
 	public static void checkContractClass(Class<?> cls) {

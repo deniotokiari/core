@@ -84,18 +84,18 @@ public class SQLQueryBuilder {
 
 	private static String getAsString(String joiner, Object... objects) {
 		String result = "";
-		for (int i = 0; i < objects.length; i++) {
-			if (objects[i] instanceof String) {
-				result += (String) objects[i] + joiner;
-			} else if (objects[i] instanceof SQLQueryBuilder) {
-				result += "(" + ((SQLQueryBuilder) objects[i]);
-				if (((SQLQueryBuilder) objects[i]).selectTitle != null) {
-					result += ") " + ((SQLQueryBuilder) objects[i]).selectTitle + joiner;
-				} else {
-					result += joiner;
-				}
-			}
-		}
+        for (Object object : objects) {
+            if (object instanceof String) {
+                result += (String) object + joiner;
+            } else if (object instanceof SQLQueryBuilder) {
+                result += "(" + ((SQLQueryBuilder) object);
+                if (((SQLQueryBuilder) object).selectTitle != null) {
+                    result += ") " + ((SQLQueryBuilder) object).selectTitle + joiner;
+                } else {
+                    result += joiner;
+                }
+            }
+        }
 		result = result.substring(0, result.length() - joiner.length());
 		return result;
 	}

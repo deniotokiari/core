@@ -3,6 +3,7 @@ package by.deniotokiari.core.utils;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import android.database.Cursor;
@@ -113,19 +114,13 @@ public class DBUtils {
 
 	private static boolean isPrimaryKeyField(Field field) {
 		Annotation annotation = field.getAnnotation(DBPrimaryKey.class);
-		if (annotation != null) {
-			return true;
-		} else {
-			return false;
-		}
+        return annotation != null;
 
 	}
 
 	private static List<Field> getListFields(Field[] fields) {
 		List<Field> list = new ArrayList<Field>();
-		for (Field field : fields) {
-			list.add(field);
-		}
+        Collections.addAll(list, fields);
 		return list;
 	}
 

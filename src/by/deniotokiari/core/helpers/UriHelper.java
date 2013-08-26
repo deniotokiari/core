@@ -41,11 +41,8 @@ public class UriHelper {
 	}
 
 	public synchronized static boolean isHasKey(Uri uri, String key) {
-		if (uri.getQuery() != null) {
-			return uri.getQuery().contains(key);
-		}
-		return false;
-	}
+        return uri.getQuery() != null && uri.getQuery().contains(key);
+    }
 
 	public static boolean isParamEqualsTo(Uri uri, String key, String param) {
 		return uri.getQueryParameter(key).equals(param);

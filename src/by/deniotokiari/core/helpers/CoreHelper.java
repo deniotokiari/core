@@ -39,9 +39,7 @@ public class CoreHelper {
 	}
 	
 	public void registerAppService(IAppServiceKey service) {
-		if (mAppServices.containsKey(service.getKey())) {
-			return;
-		} else {
+		if (!mAppServices.containsKey(service.getKey())) {
 			mAppServices.put(service.getKey(), service);
 		}
 	}

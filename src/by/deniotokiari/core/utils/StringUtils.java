@@ -7,12 +7,12 @@ public class StringUtils {
 
 	public static <T> String join(List<T> items, String joiner) {
 		String result = "";
-		for (int i = 0; i < items.size(); i++) {
-			if (items.get(i) == null) {
-				continue;
-			}
-			result += String.valueOf(items.get(i)) + joiner;
-		}
+        for (T item : items) {
+            if (item == null) {
+                continue;
+            }
+            result += String.valueOf(item) + joiner;
+        }
 		return substring(result, joiner.length());
 	}
 
@@ -20,20 +20,20 @@ public class StringUtils {
 		String result = "";
 		String[] k = new String[items.size()];
 		items.keySet().toArray(k);
-		for (int i = 0; i < k.length; i++) {
-			result += k[i] + joiner;
-		}
+        for (String aK : k) {
+            result += aK + joiner;
+        }
 		return substring(result, joiner.length());
 	}
 
 	public static <T> String join(T[] items, String joiner) {
 		String result = "";
-		for (int i = 0; i < items.length; i++) {
-			if (items[i] == null) {
-				continue;
-			}
-			result += String.valueOf(items[i]) + joiner;
-		}
+        for (T item : items) {
+            if (item == null) {
+                continue;
+            }
+            result += String.valueOf(item) + joiner;
+        }
 		return substring(result, joiner.length());
 	}
 	
