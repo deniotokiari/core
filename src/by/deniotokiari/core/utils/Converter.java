@@ -26,7 +26,7 @@ public class Converter {
 			unix /= 1000;
 			return unix;
 		} catch (ParseException ignored) {
-			
+
 		}
 		return -1;
 	}
@@ -68,13 +68,13 @@ public class Converter {
 
 	public static String bytesToHexString(byte[] bytes) {
 		StringBuilder sb = new StringBuilder();
-        for (byte aByte : bytes) {
-            String hex = Integer.toHexString(0xFF & aByte);
-            if (hex.length() == 1) {
-                sb.append('0');
-            }
-            sb.append(hex);
-        }
+		for (byte aByte : bytes) {
+			String hex = Integer.toHexString(0xFF & aByte);
+			if (hex.length() == 1) {
+				sb.append('0');
+			}
+			sb.append(hex);
+		}
 		return sb.toString();
 	}
 
