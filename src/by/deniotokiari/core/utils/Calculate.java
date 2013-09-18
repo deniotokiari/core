@@ -4,7 +4,7 @@ import android.graphics.BitmapFactory;
 
 public class Calculate {
 
-	public static int getScale(BitmapFactory.Options options, int width,
+	public static int getSampleScale(BitmapFactory.Options options, int width,
 			int height) {
 		if (options.outHeight > height || options.outWidth > width) {
 			int hRatio = Math.round((float) options.outHeight / (float) height);
