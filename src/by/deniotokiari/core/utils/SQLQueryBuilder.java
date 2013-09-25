@@ -86,7 +86,7 @@ public class SQLQueryBuilder {
 		String result = "";
         for (Object object : objects) {
             if (object instanceof String) {
-                result += (String) object + joiner;
+                result += object + joiner;
             } else if (object instanceof SQLQueryBuilder) {
                 result += "(" + ((SQLQueryBuilder) object);
                 if (((SQLQueryBuilder) object).selectTitle != null) {

@@ -54,7 +54,7 @@ public class Request<Query, Source, Result> {
                                        String processorKey, boolean isNeedCache, boolean isFromEntity) {
         mBundle = new Bundle();
 
-        String key = null;
+        String key;
         if (isFromEntity) {
             key = KEY_ENTITY;
         } else {
@@ -176,7 +176,7 @@ public class Request<Query, Source, Result> {
                     return;
                 }
                 if (isNeedCache()) {
-                    boolean isCached = false;
+                    boolean isCached;
                     isCached = processor.cache(result, context);
                     if (isCached) {
                         sendStatus(STATUS.CACHED, resultReceiver, mBundle);
