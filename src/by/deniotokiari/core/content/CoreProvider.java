@@ -9,7 +9,7 @@ import android.net.Uri;
 
 abstract public class CoreProvider extends ContentProvider {
 
-	public static final String IS_NO_NOTIFAED = "is_notifaed";
+	public static final String IS_NO_NOTIFAED = "is_no_notifaed";
 
 	private CoreDataBase mDataBase;
 
