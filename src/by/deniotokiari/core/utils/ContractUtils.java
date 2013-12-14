@@ -34,4 +34,13 @@ public class ContractUtils {
 		}
 	}
 
+    public static Class<?> getContractByUri(Uri uri, Class<?>[] contracts) {
+        for (Class<?> aClass : contracts) {
+            if (uri.equals(getUri(aClass))) {
+                return aClass;
+            }
+        }
+        return null;
+    }
+
 }
