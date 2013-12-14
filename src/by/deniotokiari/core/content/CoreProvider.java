@@ -1,5 +1,7 @@
 package by.deniotokiari.core.content;
 
+import android.content.Context;
+import by.deniotokiari.core.content.db_implementation.SQLite;
 import by.deniotokiari.core.helpers.UriHelper;
 import by.deniotokiari.core.utils.ContractUtils;
 import android.content.ContentProvider;
@@ -11,12 +13,16 @@ import java.util.WeakHashMap;
 
 abstract public class CoreProvider extends ContentProvider {
 
-    private CoreDataBase mDataBase;
+    private IDataBase<Cursor> mDataBase;
     private Class<?>[] mContracts;
 
     private WeakHashMap<Uri, Class<?>> mContractsHash;
 
-    protected abstract Class<?>[] getContracts();
+    protected IDataBase<Cursor> getDataBase(Context context) {
+        return new SQLite(context);
+    }
+
+    protected abstract Class<Cursor>[] getContracts();
 
     private Class<?> getContract(Uri uri) {
         Uri bufUri = UriHelper.getUriWithoutKeys(uri);
@@ -35,7 +41,7 @@ abstract public class CoreProvider extends ContentProvider {
 
     @Override
     public boolean onCreate() {
-        mDataBase = new CoreDataBase(getContext());
+        mDataBase = getDataBase(getContext());
         mContracts = getContracts();
         mContractsHash = new WeakHashMap<Uri, Class<?>>();
         return true;

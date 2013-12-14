@@ -1,5 +1,6 @@
-package by.deniotokiari.core.content;
+package by.deniotokiari.core.content.db_implementation;
 
+import by.deniotokiari.core.content.IDataBase;
 import by.deniotokiari.core.utils.ContractUtils;
 import by.deniotokiari.core.utils.DBUtils;
 import android.content.ContentValues;
@@ -9,7 +10,7 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-public class CoreDataBase extends SQLiteOpenHelper {
+public class SQLite extends SQLiteOpenHelper implements IDataBase<Cursor> {
 
 	private static final String DB_NAME = "core.store.db";
 	private static final int DB_VERSION = 1;
@@ -20,7 +21,7 @@ public class CoreDataBase extends SQLiteOpenHelper {
 	private boolean isInTransaction = false;
 	private Class<?> mContract;
 
-	public CoreDataBase(Context context) {
+	public SQLite(Context context) {
 		super(context, DB_NAME, null, DB_VERSION);
 		mContext = context;
 	}
@@ -55,7 +56,7 @@ public class CoreDataBase extends SQLiteOpenHelper {
 		}
 	}
 
-	protected void deleteDataBase() {
+	public void deleteDataBase() {
 		syncTransaction();
 		try {
 			setInTransaction(true);
@@ -90,7 +91,8 @@ public class CoreDataBase extends SQLiteOpenHelper {
 		}
 	}
 
-	protected long addItem(Class<?> contract, ContentValues value)
+    @Override
+    public long addItem(Class<?> contract, ContentValues value)
 			throws SQLException {
 		syncTransaction();
 		mContract = contract;
@@ -114,7 +116,8 @@ public class CoreDataBase extends SQLiteOpenHelper {
 		return added;
 	}
 
-	protected int addItems(Class<?> contract, ContentValues[] values)
+    @Override
+    public int addItems(Class<?> contract, ContentValues[] values)
 			throws SQLException {
 		syncTransaction();
 		mContract = contract;
@@ -143,7 +146,8 @@ public class CoreDataBase extends SQLiteOpenHelper {
 		return inserted;
 	}
 
-	protected Cursor getItems(Class<?> contract, String selection,
+    @Override
+    public Cursor getItems(Class<?> contract, String selection,
 			String[] selectionArgs, String orderBy) {
 		syncTransaction();
 		mContract = contract;
@@ -166,7 +170,8 @@ public class CoreDataBase extends SQLiteOpenHelper {
 		return cursor;
 	}
 
-	protected Cursor rawQuery(Class<?> contract, String sql,
+    @Override
+    public Cursor rawQuery(Class<?> contract, String sql,
 			String[] selectionArgs) {
 		syncTransaction();
 		mContract = contract;
@@ -188,7 +193,8 @@ public class CoreDataBase extends SQLiteOpenHelper {
 		return cursor;
 	}
 
-	protected int deleteItems(Class<?> contract, String where,
+	@Override
+    public int deleteItems(Class<?> contract, String where,
 			String[] whereArgs) {
 		if (mDatabase == null) {
 			return 0;
