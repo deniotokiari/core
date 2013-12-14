@@ -4,6 +4,8 @@ import android.net.Uri;
 
 public class UriHelper {
 
+    public static final String KEY_NOTIFICATION_URI = "notify";
+
 	public static final String TEMPLATE_QUERY_EMPTY = "?%s=%s";
 	public static final String TEMPLATE_QUERY_NOT_EMPTY = "&%s=%s";
 
@@ -47,5 +49,9 @@ public class UriHelper {
 	public static boolean isParamEqualsTo(Uri uri, String key, String param) {
 		return uri.getQueryParameter(key).equals(param);
 	}
+
+    public static Uri getNotificatioUri(Uri uri) {
+        return getUriWithKey(uri, KEY_NOTIFICATION_URI);
+    }
 
 }

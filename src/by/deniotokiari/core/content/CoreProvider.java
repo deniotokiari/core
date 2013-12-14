@@ -9,8 +9,6 @@ import android.net.Uri;
 
 abstract public class CoreProvider extends ContentProvider {
 
-	public static final String IS_NO_NOTIFAED = "is_no_notifaed";
-
 	private CoreDataBase mDataBase;
 
 	protected abstract Class<?> getContract();
@@ -30,7 +28,7 @@ abstract public class CoreProvider extends ContentProvider {
 	public int delete(Uri uri, String selection, String[] selectionArgs) {
 		int result = mDataBase.deleteItems(getContract(), selection,
 				selectionArgs);
-		if (!UriHelper.isHasKey(uri, IS_NO_NOTIFAED)) {
+		if (UriHelper.isHasKey(uri, UriHelper.KEY_NOTIFICATION_URI)) {
 			getContext().getContentResolver().notifyChange(uri, null);
 		}
 		return result;
@@ -39,7 +37,7 @@ abstract public class CoreProvider extends ContentProvider {
 	@Override
 	public int bulkInsert(Uri uri, ContentValues[] values) {
 		int inserted = mDataBase.addItems(getContract(), values);
-		if (!UriHelper.isHasKey(uri, IS_NO_NOTIFAED)) {
+		if (UriHelper.isHasKey(uri, UriHelper.KEY_NOTIFICATION_URI)) {
 			getContext().getContentResolver().notifyChange(uri, null);
 		}
 		return inserted;
@@ -50,7 +48,7 @@ abstract public class CoreProvider extends ContentProvider {
 		long id = mDataBase.addItem(getContract(), value);
 		Uri itemUri = Uri.parse(uri + "/" + id);
 		if (id > 0) {
-			if (!UriHelper.isHasKey(uri, IS_NO_NOTIFAED)) {
+			if (UriHelper.isHasKey(uri, UriHelper.KEY_NOTIFICATION_URI)) {
 				getContext().getContentResolver().notifyChange(itemUri, null);
 			}
 		}
@@ -62,7 +60,7 @@ abstract public class CoreProvider extends ContentProvider {
 			String[] selectionArgs, String sortOrder) {
 		Cursor items = mDataBase.getItems(getContract(), selection,
 				selectionArgs, sortOrder);
-		if (!UriHelper.isHasKey(uri, IS_NO_NOTIFAED)) {
+		if (UriHelper.isHasKey(uri, UriHelper.KEY_NOTIFICATION_URI)) {
 			items.setNotificationUri(getContext().getContentResolver(), uri);
 		}
 		return items;
@@ -76,7 +74,7 @@ abstract public class CoreProvider extends ContentProvider {
 
 	public Cursor rawQuery(Uri uri, String sql, String[] selectionArgs) {
 		Cursor items = mDataBase.rawQuery(getContract(), sql, selectionArgs);
-		if (!UriHelper.isHasKey(uri, IS_NO_NOTIFAED)) {
+		if (UriHelper.isHasKey(uri, UriHelper.KEY_NOTIFICATION_URI)) {
 			items.setNotificationUri(getContext().getContentResolver(), uri);
 		}
 		return items;
