@@ -54,7 +54,7 @@ public class SQLQueryBuilder {
 		return getAsString(", ", result);
 	}
 
-	private void build() {
+	private String build() {
 		sql = "";
 		if (select != null) {
 			sql += select;
@@ -80,6 +80,8 @@ public class SQLQueryBuilder {
 		if (limit != null) {
 			sql += " " + limit;
 		}
+
+        return sql;
 	}
 
 	private static String getAsString(String joiner, Object... objects) {
