@@ -5,6 +5,8 @@ import by.deniotokiari.core.annotations.db.DBContract;
 import by.deniotokiari.core.annotations.db.DBTableName;
 import android.net.Uri;
 
+import java.util.Collection;
+
 public class ContractUtils {
 
 	private static final String WRONG_CONTRACT_CLASS = "Wrong contracts class! Contracts class should be marked with DBContract annotation";
@@ -34,7 +36,7 @@ public class ContractUtils {
 		}
 	}
 
-    public static Class<?> getContractByUri(Uri uri, Class<?>[] contracts) {
+    public static Class<?> getContractByUri(Uri uri, Collection<Class<?>> contracts) {
         for (Class<?> aClass : contracts) {
             if (uri.equals(getUri(aClass))) {
                 return aClass;

@@ -1,20 +1,22 @@
 package by.deniotokiari.core.content;
 
-import android.content.Context;
-import by.deniotokiari.core.content.db_implementation.SQLite;
-import by.deniotokiari.core.helpers.UriHelper;
-import by.deniotokiari.core.utils.ContractUtils;
 import android.content.ContentProvider;
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
+import by.deniotokiari.core.content.db_implementation.SQLite;
+import by.deniotokiari.core.helpers.UriHelper;
+import by.deniotokiari.core.service.RequestContract;
+import by.deniotokiari.core.utils.ContractUtils;
 
+import java.util.Collection;
 import java.util.WeakHashMap;
 
 abstract public class CoreProvider extends ContentProvider {
 
     private IDataBase<Cursor> mDataBase;
-    private Class<?>[] mContracts;
+    private Collection<Class<?>> mContracts;
 
     private WeakHashMap<Uri, Class<?>> mContractsHash;
 
@@ -22,7 +24,7 @@ abstract public class CoreProvider extends ContentProvider {
         return new SQLite(context);
     }
 
-    protected abstract Class<Cursor>[] getContracts();
+    protected abstract Collection<Class<?>> getContracts();
 
     private Class<?> getContract(Uri uri) {
         Uri bufUri = UriHelper.getUriWithoutKeys(uri);
@@ -43,6 +45,9 @@ abstract public class CoreProvider extends ContentProvider {
     public boolean onCreate() {
         mDataBase = getDataBase(getContext());
         mContracts = getContracts();
+
+        mContracts.add(RequestContract.class);
+
         mContractsHash = new WeakHashMap<Uri, Class<?>>();
         return true;
     }

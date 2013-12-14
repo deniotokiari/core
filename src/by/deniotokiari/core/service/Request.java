@@ -21,6 +21,7 @@ public class Request<Query, Source, Result> {
     public static final String KEY_SOURCE_KEY = "request:sourceKey";
     public static final String KEY_PROCESSOR_KEY = "request:processorKey";
     public static final String KEY_ENTITY = "request:entity";
+    public static final String KEY_EXPIRED_TIME = "request:expire_time";
     public static final String KEY_REQUEST_TYPE = "request:requestType";
     public static final String KEY_IS_NEED_CACHE = "request:isNeedCache";
     public static final String KEY_ENTITY_TYPE = "request:entityType";
@@ -37,6 +38,12 @@ public class Request<Query, Source, Result> {
         mBundle = intent.getParcelableExtra(KEY_REQUEST);
     }
 
+    /**
+     * If we need process request from some entity so use this constructor
+     * @param source
+     * @param processorKey
+     * @param isNeedCache
+     */
     public Request(Source source, String processorKey, boolean isNeedCache) {
         setArgsToBundle(source, null, processorKey, isNeedCache, true);
     }
