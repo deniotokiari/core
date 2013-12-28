@@ -31,7 +31,7 @@ public class SourceService extends IntentService {
     public static void execute(Context context, Request<?, ?, ?> request,
                                ResultReceiver receiver) {
         Intent intent = new Intent(context, SourceService.class);
-        request.setBundleToInten(intent);
+        request.setBundleToIntent(intent);
         intent.putExtra(KEY_RESULT_RECEIVER, receiver);
         context.startService(intent);
     }

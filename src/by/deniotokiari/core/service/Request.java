@@ -53,7 +53,7 @@ public class Request<Query, Source, Result> {
         setArgsToBundle(query, sourceKey, processorKey, isNeedCache, false);
     }
 
-    public void setBundleToInten(Intent intent) {
+    public void setBundleToIntent(Intent intent) {
         intent.putExtra(KEY_REQUEST, mBundle);
     }
 
@@ -126,7 +126,7 @@ public class Request<Query, Source, Result> {
     }
 
     @SuppressWarnings("unchecked")
-    protected <T> T getEntyti(Bundle bundle, String key) {
+    protected <T> T getEntity(Bundle bundle, String key) {
         ENTITY_TYPE type = ENTITY_TYPE.valueOf(bundle
                 .getString(KEY_ENTITY_TYPE));
         switch (type) {
@@ -156,7 +156,7 @@ public class Request<Query, Source, Result> {
                 ISource<Query, Source> dataSource = (ISource<Query, Source>) AppUtils
                         .get(context, getSourceKey());
                 try {
-                    source = dataSource.getSource((Query) getEntyti(mBundle, KEY_QUERY));
+                    source = dataSource.getSource((Query) getEntity(mBundle, KEY_QUERY));
                 } catch (Exception e) {
                     mBundle.putSerializable(SourceResultReceiver.ERROR_KEY, e);
                     sendStatus(STATUS.ERROR, resultReceiver, mBundle);
@@ -169,7 +169,7 @@ public class Request<Query, Source, Result> {
                     return;
                 }
             } else {
-                source = getEntyti(mBundle, KEY_ENTITY);
+                source = getEntity(mBundle, KEY_ENTITY);
             }
             IProcessor<Source, Result> processor = (IProcessor<Source, Result>) AppUtils
                     .get(context, getProcessorKey());

@@ -9,28 +9,28 @@ public class PrefUtils {
     private static final String PREF_NAME = "application_preferences";
     private static final int MODE = Context.MODE_PRIVATE;
 
-    private static void put(String key, Object value) {
+    private static void set(String key, Object value) {
         PreferencesHelper.put(ContextHolder.getInstance().getContext(), PREF_NAME, MODE, key, value);
     }
 
     public static void put(String key, Boolean value) {
-        put(key, value);
+        set(key, value);
     }
 
     public static void put(String key, Float value) {
-        put(key, value);
+        set(key, value);
     }
 
     public static void put(String key, Integer value) {
-        put(key, value);
+        set(key, value);
     }
 
     public static void put(String key, Long value) {
-        put(key, value);
+        set(key, value);
     }
 
     public static void put(String key, String value) {
-        put(key, value);
+        set(key, value);
     }
 
     public static boolean get(String key, boolean defValue) {
