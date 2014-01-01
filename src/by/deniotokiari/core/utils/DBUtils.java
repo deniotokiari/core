@@ -69,7 +69,7 @@ public class DBUtils {
 			throw new IllegalArgumentException(String.format(FIELD_UNMARKED,
 					field.getName(), field.getClass().getSimpleName()));
 		}
-		String fieldValue = getFieldValue(field);
+		String fieldValue = field.getName();//getFieldValue(field);
 		String template = null;
 		for (Annotation annotation : annotations) {
 			if (annotation instanceof DBPrimaryKey) {

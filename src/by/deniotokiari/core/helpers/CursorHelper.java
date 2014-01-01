@@ -1,7 +1,8 @@
 package by.deniotokiari.core.helpers;
 
-import android.content.ContentValues;
 import android.database.Cursor;
+import by.deniotokiari.core.content.CoreContract;
+import by.deniotokiari.core.utils.L;
 
 public class CursorHelper {
 
@@ -13,14 +14,15 @@ public class CursorHelper {
         return (cursor.getCount() == 0) && (cursor.isClosed());
     }
 
-    public static ContentValues getContentValues(Cursor cursor) {
-        ContentValues values = new ContentValues();
-
-        for (String name : cursor.getColumnNames()) {
-            values.put(name, get(cursor, name));
+    public static <T extends CoreContract> T getEntity(Cursor cursor, Class<T> clazz) {
+        try {
+            T entity = clazz.newInstance();
+        } catch (InstantiationException e) {
+            L.d
+            return null;
+        } catch (IllegalAccessException e) {
+            return null;
         }
-
-        return values.keySet().size() == 0 ? null : values;
     }
 
 }
