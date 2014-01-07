@@ -19,7 +19,7 @@ public class SQLite extends SQLiteOpenHelper implements IDataBase {
     private static final Object sDbObjectLock = new Object();
 
     private Context mContext;
-    private boolean isInTransaction = true;
+    private boolean isInTransaction = false;
 
     private interface Operation<T> {
 
@@ -34,7 +34,7 @@ public class SQLite extends SQLiteOpenHelper implements IDataBase {
     }
 
     private <Q> Q executeDbOperation(Operation<Q> operation, Class<?> contract, String errorMessage) {
-        return executeDbOperation(operation, contract, errorMessage, false);
+        return executeDbOperation(operation, contract, errorMessage, true);
     }
 
     private <Q> Q executeDbOperation(Operation<Q> operation, Class<?> contract, String errorMessage, boolean withTableCreate) {
@@ -76,7 +76,7 @@ public class SQLite extends SQLiteOpenHelper implements IDataBase {
                     database.execSQL(DBUtils.getCreateTableString(contract));
                     return 1;
                 }
-            }, contract, null);
+            }, contract, null, false);
         }
     }
 

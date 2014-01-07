@@ -4,8 +4,6 @@ import android.net.Uri;
 import by.deniotokiari.android.core.annotation.contract.Contract;
 import by.deniotokiari.android.core.provider.CoreProvider;
 
-import java.lang.annotation.Annotation;
-
 public class ContractHelper {
 
     public static final String URI_PREFIX = "content://" + CoreProvider.class.getName() + "/";
@@ -13,9 +11,9 @@ public class ContractHelper {
 
     public static Uri getUri(Class<?> contract) {
         Contract annotation = contract.getAnnotation(Contract.class);
-        if (annotation.uri() != null) {
+        if (!annotation.uri().equals("")) {
             return Uri.parse(annotation.uri());
-        } else if (annotation.tableName() != null) {
+        } else if (!annotation.tableName().equals("")) {
             return Uri.parse(URI_PREFIX + annotation.tableName());
         } else {
             return Uri.parse(URI_PREFIX + contract.getName());
@@ -24,9 +22,9 @@ public class ContractHelper {
 
     public static String getType(Class<?> contract) {
         Contract annotation = contract.getAnnotation(Contract.class);
-        if (annotation.type() != null) {
+        if (!annotation.type().equals("")) {
             return annotation.type();
-        } else if (annotation.tableName() != null) {
+        } else if (!annotation.tableName().equals("")) {
             return TYPE_PREFIX + annotation.tableName();
         } else {
             return TYPE_PREFIX + contract.getName();
@@ -35,10 +33,10 @@ public class ContractHelper {
 
     public static String getTableName(Class<?> contract) {
         String tableName = contract.getAnnotation(Contract.class).tableName();
-        if (tableName != null) {
-            return tableName;
+        if (!tableName.equals("")) {
+            return "'" + tableName + "'";
         } else {
-            return contract.getName();
+            return "'" + contract.getName() + "'";
         }
     }
 

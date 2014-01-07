@@ -14,7 +14,7 @@ import java.util.List;
 
 public class DBUtils {
 
-    private static final String TEMPLATE_SELECT_DISTINCT_TABLE = "SELECT DISTINCT tbl_name from sqlite_master where tbl_name = '%s'";
+    private static final String TEMPLATE_SELECT_DISTINCT_TABLE = "SELECT DISTINCT tbl_name from sqlite_master where tbl_name = %s";
     private static final String TEMPLATE_CREATE_TABLE = "CREATE TABLE %s (%s)";
     private static final String TEMPLATE_FIELD = "%s %s";
     private static final String TEMPLATE_PRIMARY_KEY = "%s %s PRIMARY KEY";
@@ -26,6 +26,10 @@ public class DBUtils {
         List<Field>  fields = Arrays.asList(contract.getFields());
 
         for (Field field : fields) {
+            if (!isDbField(field)) {
+                continue;
+            }
+
             if (isPrimaryKeyField(field)) {
                 fieldsSql.add(0, getFieldSql(TEMPLATE_PRIMARY_KEY, field));
             } else if (isUniqueField(field)) {
@@ -42,6 +46,10 @@ public class DBUtils {
         return String.format(TEMPLATE_CREATE_TABLE, ContractHelper.getTableName(contract), StringUtils.join(fieldsSql, ", "));
     }
 
+    private static boolean isDbField(Field field) {
+        return field.getAnnotation(dbField.class) != null;
+    }
+
     private static boolean isPrimaryKeyField(Field field) {
         return field.getAnnotation(dbPrimaryKey.class) != null;
     }
@@ -51,30 +59,28 @@ public class DBUtils {
     }
 
     private static String getFieldSql(String template, Field field) {
-        String result = "";
+        List<String> result = new ArrayList<String>();
         Annotation[] annotations = field.getAnnotations();
 
         for (Annotation annotation : annotations) {
             if (annotation instanceof dbBoolean) {
-                result += "BOOLEAN";
+                result.add(0, String.format(template, field.getName(), "BOOLEAN"));
             } else if (annotation instanceof dbVarchar) {
-                result += "VARCHAR";
+                result.add(0, String.format(template, field.getName(), "VARCHAR"));
             } else if (annotation instanceof dbString) {
-                result += "STRING";
+                result.add(0, String.format(template, field.getName(), "STRING"));
             } else if (annotation instanceof dbInteger) {
-                result += "INTEGER";
+                result.add(0, String.format(template, field.getName(), "INTEGER"));
             } else if (annotation instanceof dbLong) {
-                result += "BIGINT";
-            } else {
-                result += "VARCHAR";
+                result.add(0, String.format(template, field.getName(), "BIGINT"));
             }
 
             if (annotation instanceof dbAutoincrement) {
-                result += " " + "AUTOINCREMENT";
+                result.add("AUTOINCREMENT");
             }
         }
 
-        return String.format(template, field.getName(), result);
+        return StringUtils.join(result, " ");
     }
 
     public static boolean isTableExists(SQLiteDatabase db, String tableName) {
@@ -102,6 +108,5 @@ public class DBUtils {
             db.endTransaction();
         }
     }
-
 
 }
