@@ -33,7 +33,7 @@ public class DBUtils {
             if (isPrimaryKeyField(field)) {
                 fieldsSql.add(0, getFieldSql(TEMPLATE_PRIMARY_KEY, field));
             } else if (isUniqueField(field)) {
-                uniqueFieldsSql.add(field.getName());
+                uniqueFieldsSql.add(getName(field));
             } else {
                 fieldsSql.add(getFieldSql(TEMPLATE_FIELD, field));
             }
@@ -58,21 +58,33 @@ public class DBUtils {
         return field.getAnnotation(dbUnique.class) != null;
     }
 
+    private static String getName(Field field) {
+        String value = null;
+
+        try {
+            value = (String) field.get(value);
+        } catch (IllegalAccessException e) {
+            return null;
+        }
+
+        return value;
+    }
+
     private static String getFieldSql(String template, Field field) {
         List<String> result = new ArrayList<String>();
         Annotation[] annotations = field.getAnnotations();
 
         for (Annotation annotation : annotations) {
             if (annotation instanceof dbBoolean) {
-                result.add(0, String.format(template, field.getName(), "BOOLEAN"));
+                result.add(0, String.format(template, getName(field), "BOOLEAN"));
             } else if (annotation instanceof dbVarchar) {
-                result.add(0, String.format(template, field.getName(), "VARCHAR"));
+                result.add(0, String.format(template, getName(field), "VARCHAR"));
             } else if (annotation instanceof dbString) {
-                result.add(0, String.format(template, field.getName(), "STRING"));
+                result.add(0, String.format(template, getName(field), "STRING"));
             } else if (annotation instanceof dbInteger) {
-                result.add(0, String.format(template, field.getName(), "INTEGER"));
+                result.add(0, String.format(template, getName(field), "INTEGER"));
             } else if (annotation instanceof dbLong) {
-                result.add(0, String.format(template, field.getName(), "BIGINT"));
+                result.add(0, String.format(template, getName(field), "BIGINT"));
             }
 
             if (annotation instanceof dbAutoincrement) {

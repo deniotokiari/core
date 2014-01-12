@@ -10,14 +10,6 @@ public class TestEntity extends CoreContract {
 
     @dbField
     @dbString
-    private String title;
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
+    public static final String TITLE = "TITLE";
 
 }
