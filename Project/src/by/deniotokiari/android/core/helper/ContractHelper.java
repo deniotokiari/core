@@ -1,13 +1,8 @@
 package by.deniotokiari.android.core.helper;
 
-import android.content.ContentValues;
 import android.net.Uri;
 import by.deniotokiari.android.core.annotation.contract.Contract;
-import by.deniotokiari.android.core.annotation.field.*;
 import by.deniotokiari.android.core.provider.CoreProvider;
-
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
 
 public class ContractHelper {
 

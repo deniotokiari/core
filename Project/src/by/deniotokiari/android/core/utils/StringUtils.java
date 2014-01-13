@@ -30,4 +30,14 @@ public class StringUtils {
         return str.substring(0, str.length() - n);
     }
 
+    public static String fill(String value, String pattern, String... args) {
+        String result = value;
+
+        for (String arg : args) {
+            result = result.replaceFirst(pattern, arg);
+        }
+
+        return result;
+    }
+
 }

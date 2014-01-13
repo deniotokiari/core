@@ -12,4 +12,8 @@ public class TestEntity extends CoreContract {
     @dbString
     public static final String TITLE = "TITLE";
 
+    @dbField
+    @dbString
+    public static final String DESCRIPTION = "DESCRIPTION";
+
 }

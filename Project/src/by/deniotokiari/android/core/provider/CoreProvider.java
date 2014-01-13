@@ -52,9 +52,13 @@ public abstract class CoreProvider extends ContentProvider {
 
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
-        Cursor result = mDataBase.query(getContract(uri), projection, selection, selectionArgs, sortOrder);
-        setNotificationUri(uri, result);
-        return result;
+        if (UriHelper.isWithSql(uri)) {
+            return rawQuery(uri, UriHelper.getSqlFromUri(uri), selectionArgs);
+        } else {
+            Cursor result = mDataBase.query(getContract(uri), projection, selection, selectionArgs, sortOrder);
+            setNotificationUri(uri, result);
+            return result;
+        }
     }
 
     public Cursor rawQuery(Uri uri, String sql, String[] selectionArgs) {
