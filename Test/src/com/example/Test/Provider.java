@@ -13,7 +13,7 @@ public class Provider extends CoreProvider {
     };
 
     @Override
-    public Collection<Class<?>> getContracts() {
+    public List<Class<?>> getContracts() {
         return Arrays.asList(mContracts);
     }
 

@@ -5,19 +5,22 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
+import by.deniotokiari.android.core.contract.CoreRequestContract;
 import by.deniotokiari.android.core.db.IDataBase;
 import by.deniotokiari.android.core.db.impl.SQLite;
 import by.deniotokiari.android.core.helper.ContractHelper;
 import by.deniotokiari.android.core.helper.UriHelper;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 public abstract class CoreProvider extends ContentProvider {
 
     private IDataBase mDataBase;
-    private Collection<Class<?>> mContracts;
+    private List<Class<?>> mContracts;
 
-    public abstract Collection<Class<?>> getContracts();
+    public abstract List<Class<?>> getContracts();
 
     // for default init in SQLite db
     public IDataBase getDataBase(Context context) {
@@ -41,7 +44,12 @@ public abstract class CoreProvider extends ContentProvider {
     @Override
     public boolean onCreate() {
         mDataBase = getDataBase(getContext());
-        mContracts = getContracts();
+
+        mContracts = new ArrayList<Class<?>>();
+        mContracts.addAll(getContracts());
+
+        mContracts.add(CoreRequestContract.class);
+
         return true;
     }
 
@@ -52,8 +60,8 @@ public abstract class CoreProvider extends ContentProvider {
 
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
-        if (UriHelper.isWithSql(uri)) {
-            return rawQuery(uri, UriHelper.getSqlFromUri(uri), selectionArgs);
+        if (UriHelper.isSqlUri(uri)) {
+            return rawQuery(UriHelper.getUriWithoutQuery(uri), selection, selectionArgs);
         } else {
             Cursor result = mDataBase.query(getContract(uri), projection, selection, selectionArgs, sortOrder);
             setNotificationUri(uri, result);
@@ -72,7 +80,7 @@ public abstract class CoreProvider extends ContentProvider {
         long id = mDataBase.insert(getContract(uri), values);
         Uri itemUri = Uri.parse(UriHelper.getUriWithoutQuery(uri) + "/" + id);
         if (id > 0) {
-            notifyChange(uri);
+            notifyChange(itemUri);
         }
         return itemUri;
     }

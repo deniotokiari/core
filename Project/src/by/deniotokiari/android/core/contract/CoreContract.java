@@ -1,4 +1,4 @@
-package by.deniotokiari.android.core.db;
+package by.deniotokiari.android.core.contract;
 
 import by.deniotokiari.android.core.annotation.field.dbAutoincrement;
 import by.deniotokiari.android.core.annotation.field.dbField;

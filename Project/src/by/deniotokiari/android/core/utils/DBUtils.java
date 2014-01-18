@@ -2,7 +2,6 @@ package by.deniotokiari.android.core.utils;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import by.deniotokiari.android.core.annotation.contract.Contract;
 import by.deniotokiari.android.core.annotation.field.*;
 import by.deniotokiari.android.core.helper.ContractHelper;
 
@@ -58,7 +57,7 @@ public class DBUtils {
         return field.getAnnotation(dbUnique.class) != null;
     }
 
-    private static String getName(Field field) {
+    public static String getName(Field field) {
         String value = null;
 
         try {

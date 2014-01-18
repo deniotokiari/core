@@ -187,9 +187,18 @@ public class SQLite extends SQLiteOpenHelper implements IDataBase {
     }
 
     @Override
-    public int update(Class<?> contract, ContentValues values, String selection, String[] selectionArgs) {
-        // TODO implement update
-        return 0;
+    public int update(Class<?> contract, final ContentValues values, final String selection, final String[] selectionArgs) {
+        return executeDbOperation(new Operation<Integer>() {
+            @Override
+            public Integer execute(SQLiteDatabase database, String tableName) {
+                int updated = database.updateWithOnConflict(tableName, values, selection, selectionArgs, SQLiteDatabase.CONFLICT_REPLACE);
+                if (updated <= 0) {
+                    return null;
+                } else {
+                    return updated;
+                }
+            }
+        }, contract, "Failed to update row into " + ContractHelper.getTableName(contract));
     }
 
     @Override

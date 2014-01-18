@@ -6,7 +6,7 @@ import by.deniotokiari.android.core.utils.StringUtils;
 public class UriHelper {
 
     public static final String KEY_NOTIFICATION_URI = "notify";
-    public static final String KEY_SQL = "sql";
+    public static final String KEY_SQL_URI = "sql";
 
     public static boolean isHasKey(Uri uri, String key) {
         return uri.getQuery() != null && uri.getQuery().contains(key);
@@ -32,16 +32,12 @@ public class UriHelper {
         }
     }
 
-    public static boolean isWithSql(Uri uri) {
-        return isHasKey(uri, KEY_SQL);
+    public static boolean isSqlUri(Uri uri) {
+        return isHasKey(uri, KEY_SQL_URI);
     }
 
-    public static String getSqlFromUri(Uri uri) {
-        return uri.getQueryParameter(KEY_SQL);
-    }
-
-    public static Uri getUriWithSql(Class<?> contract, String sql, String... args) {
-        return getUriWithKey(ContractHelper.getUri(contract), KEY_SQL + "=" + (args == null ? sql : StringUtils.fill(sql, "\\?", args)));
+    public static Uri getUriSql(Uri uri) {
+        return getUriWithKey(uri, KEY_SQL_URI);
     }
 
 }
